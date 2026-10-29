@@ -18,16 +18,28 @@
         />
       </a-col>
       <!-- 用户信息展示栏 -->
-      <a-col flex="120px">
+      <a-col flex="140px">
         <div class="user-login-status">
           <div v-if="loginUserStore.loginUser.id">
-            <a-dropdown>
-              <a-space>
+            <a-dropdown
+              v-model:open="userMenuOpen"
+              :trigger="['click']"
+              placement="bottomRight"
+              overlay-class-name="user-dropdown"
+            >
+              <a-space :class="['user-trigger', { 'is-open': userMenuOpen }]">
                 <a-avatar :src="loginUserStore.loginUser.userAvatar" />
                 {{ loginUserStore.loginUser.userName ?? '无名' }}
+                <DownOutlined class="user-caret" />
               </a-space>
               <template #overlay>
-                <a-menu>
+                <a-menu @click="doUserMenuClick">
+                  <a-menu-item>
+                    <router-link to="/user/profile">
+                      <IdcardOutlined />
+                      我的页面
+                    </router-link>
+                  </a-menu-item>
                   <a-menu-item>
                     <router-link to="/my_space">
                       <UserOutlined />
@@ -52,13 +64,21 @@
 </template>
 <script lang="ts" setup>
 import { computed, h, ref } from 'vue'
-import { HomeOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, IdcardOutlined, DownOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons-vue'
 import { MenuProps, message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { userLogoutUsingPost } from '@/api/userController.ts'
 
 const loginUserStore = useLoginUserStore()
+
+// 用户菜单展开状态
+const userMenuOpen = ref(false)
+
+// 点击菜单项后收起菜单
+const doUserMenuClick = () => {
+  userMenuOpen.value = false
+}
 
 // 未经过滤的菜单项
 const originItems = [
@@ -156,5 +176,63 @@ const doLogout = async () => {
 
 .logo {
   height: 48px;
+}
+
+#globalHeader .user-trigger {
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#globalHeader .user-trigger:hover,
+#globalHeader .user-trigger.is-open {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+#globalHeader .user-caret {
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s;
+}
+
+#globalHeader .user-trigger.is-open .user-caret {
+  transform: rotate(180deg);
+}
+</style>
+
+<style>
+.user-dropdown.ant-slide-up-enter.ant-slide-up-enter-active,
+.user-dropdown.ant-slide-up-appear.ant-slide-up-appear-active {
+  animation-name: userDropdownIn;
+  animation-duration: 0.28s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.user-dropdown.ant-slide-up-leave.ant-slide-up-leave-active {
+  animation-name: userDropdownOut;
+  animation-duration: 0.16s;
+}
+
+@keyframes userDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes userDropdownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
 }
 </style>

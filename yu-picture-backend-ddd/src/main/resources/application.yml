@@ -80,6 +80,11 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.yupi.yupicture.interfaces.controller
+# 本地文件存储配置
+file:
+  upload:
+    # 头像保存目录
+    avatar-dir: ./uploads/avatar
 ## 对象存储配置（需要从腾讯云获取）
 #cos:
 #  client:

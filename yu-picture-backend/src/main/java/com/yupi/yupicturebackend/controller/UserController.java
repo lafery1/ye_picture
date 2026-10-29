@@ -2,6 +2,7 @@ package com.yupi.yupicturebackend.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yupi.yupicturebackend.annotation.AuthCheck;
@@ -128,6 +129,28 @@ public class UserController {
         }
         boolean b = userService.removeById(deleteRequest.getId());
         return ResultUtils.success(b);
+    }
+
+    /**
+     * 修改个人资料
+     */
+    @PostMapping("/edit")
+    public BaseResponse<LoginUserVO> editUser(@RequestBody UserEditRequest userEditRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(userEditRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.NO_AUTH_ERROR);
+        String userName = userEditRequest.getUserName();
+        ThrowUtils.throwIf(StrUtil.isBlank(userName), ErrorCode.PARAMS_ERROR, "昵称不能为空");
+        ThrowUtils.throwIf(userName.length() > 256, ErrorCode.PARAMS_ERROR, "昵称过长");
+        ThrowUtils.throwIf(StrUtil.length(userEditRequest.getUserAvatar()) > 1024, ErrorCode.PARAMS_ERROR, "头像地址过长");
+        ThrowUtils.throwIf(StrUtil.length(userEditRequest.getUserProfile()) > 512, ErrorCode.PARAMS_ERROR, "简介过长");
+        // 对象转换
+        User user = new User();
+        BeanUtil.copyProperties(userEditRequest, user);
+        user.setId(loginUser.getId());
+        boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(userService.getLoginUserVO(userService.getById(loginUser.getId())));
     }
 
     /**

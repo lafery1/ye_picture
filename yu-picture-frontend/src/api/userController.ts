@@ -29,6 +29,21 @@ export async function deleteUserUsingPost(
   })
 }
 
+/** editUser POST /api/user/edit */
+export async function editUserUsingPost(
+  body: API.UserEditRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseLoginUserVO_>('/api/user/edit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
 /** exchangeVip POST /api/user/exchange/vip */
 export async function exchangeVipUsingPost(
   body: API.VipExchangeRequest,
