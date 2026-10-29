@@ -4,8 +4,8 @@
       <a-col flex="200px">
         <router-link to="/">
           <div class="title-bar">
-            <img class="logo" src="../assets/logo.png" alt="logo" />
-            <div class="title">鱼皮云图库</div>
+            <img class="logo" src="E:\project\yu-picture\yu-picture-frontend\public\logo2.png" alt="logo" />
+            <div class="title">像素仓云图库</div>
           </div>
         </router-link>
       </a-col>
@@ -88,11 +88,11 @@ const originItems = [
     label: '空间管理',
     title: '空间管理',
   },
-  {
-    key: 'others',
-    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
-    title: '编程导航',
-  },
+  // {
+  //   key: 'others',
+  //   label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
+  //   title: '编程导航',
+  // },
 ]
 
 // 根据权限过滤菜单项

@@ -1,5 +1,5 @@
 <template>
-  <!-- @author 程序员鱼皮 <a href="https://www.codefather.cn">编程导航原创项目</a> -->
+  <!-- @author 程序员像素仓 <a href="https://www.codefather.cn">编程导航原创项目</a> -->
   <div id="addPictureBatchPage">
     <h2 style="margin-bottom: 16px">批量创建</h2>
     <!-- 图片信息表单 -->

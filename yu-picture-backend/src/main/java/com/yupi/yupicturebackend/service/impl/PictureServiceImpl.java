@@ -473,24 +473,29 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
         // 校验权限，已经改为使用注解鉴权
 //        checkPictureAuth(loginUser, oldPicture);
+
         // 开启事务
         transactionTemplate.execute(status -> {
             // 操作数据库
             boolean result = this.removeById(pictureId);
             ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
-            // 更新空间的使用额度，释放额度
-            boolean update = spaceService.lambdaUpdate()
-                    .eq(Space::getId, oldPicture.getSpaceId())
-                    .setSql("totalSize = totalSize - " + oldPicture.getPicSize())
-                    .setSql("totalCount = totalCount - 1")
-                    .update();
-            ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+
+            // ===== 修改部分开始：增加 spaceId 非空判断 =====
+            // 只有属于特定空间的图片，才需要扣减空间额度。公共图库的 spaceId 为空。
+            if (oldPicture.getSpaceId() != null) {
+                // 更新空间的使用额度，释放额度
+                boolean update = spaceService.lambdaUpdate()
+                        .eq(Space::getId, oldPicture.getSpaceId())
+                        .setSql("totalSize = totalSize - " + oldPicture.getPicSize())
+                        .setSql("totalCount = totalCount - 1")
+                        .update();
+                ThrowUtils.throwIf(!update, ErrorCode.OPERATION_ERROR, "额度更新失败");
+            }
+            // ===== 修改部分结束 =====
+
             return true;
         });
-        // 异步清理文件
-        this.clearPictureFile(oldPicture);
     }
-
     @Override
     public void editPicture(PictureEditRequest pictureEditRequest, User loginUser) {
         // 在此处将实体类和 DTO 进行转换
